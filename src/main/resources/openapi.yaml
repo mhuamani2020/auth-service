@@ -1,0 +1,93 @@
+openapi: 3.0.3
+info:
+  title: Auth Service API
+  version: 1.0.0
+  description: API de autenticacion y autorizacion basada en JWT
+paths:
+  /auth/login:
+    post:
+      summary: Autentica un usuario y devuelve un token JWT
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Credenciales invalidas
+  /auth/register:
+    post:
+      summary: Registra un usuario para autenticacion
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: "Nombre de usuario."
+        password:
+          type: string
+          description: "Contrasena en texto plano; se compara contra el hash almacenado."
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: "Nombre de usuario unico."
+        password:
+          type: string
+          description: "Contrasena en texto plano; se almacena cifrada."
+        role:
+          type: string
+          description: "Rol del usuario (ADMIN, USER). Por defecto USER."
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: "Token JWT firmado."
+        tokenType:
+          type: string
+          description: "Tipo del token; siempre 'Bearer'."
+        expiresIn:
+          type: integer
+          format: int64
+          description: "Vigencia del token en segundos."
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        role:
+          type: string

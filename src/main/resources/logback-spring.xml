@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Configuración de trazas con Logback
+  (Parte I: "Manejo de trazas con Logback y utilizar el nivel del log adecuado").
+
+  Este fichero src/main/resources/logback-spring.xml lo carga Logback en el arranque y
+  sustituye a la configuración por defecto de Spring Boot. Permite:
+
+    1. Definir el patrón de la traza: fecha, nivel, aplicación, hilo, logger y mensaje.
+    2. Fijar un nivel adecuado por capa:
+         - INFO  en la raíz: traza normal de funcionamiento del microservicio.
+         - DEBUG en el código de negocio (com.nttdata): detalle de las operaciones.
+         - WARN/INFO en frameworks de terceros: solo avisos relevantes.
+    3. El nivel de cada mensaje lo decide quien registra.
+
+  Nota: se usa únicamente el appender de consola.
+-->
+<configuration>
+
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="application"/>
+
+    <property name="ROOT_LEVEL" value="INFO"/>
+
+    <property name="CONSOLE_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [${APP_NAME}] [%thread] %logger{36} - %msg%n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="com.nttdata" level="DEBUG"/>
+
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.springframework.cloud" level="WARN"/>
+    <logger name="org.springframework.security" level="INFO"/>
+    <logger name="com.netflix.eureka" level="WARN"/>
+    <logger name="org.mongodb.driver" level="WARN"/>
+
+    <root level="${ROOT_LEVEL}">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
